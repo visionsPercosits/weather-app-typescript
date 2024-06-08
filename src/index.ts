@@ -1,28 +1,42 @@
-import { CurrentWeather } from "./intefaces";
+import { CurrentWeather } from './intefaces';
 import { apiKey } from "../config.json";
 
 const getWeather = async (): Promise<CurrentWeather> => {
-  const response = await fetch(
-    `https://api.openweathermap.org/data/3.0/onecall?lat=33.44&lon=-94.04&appid=${apiKey}`
-  );
+  const url = 'https://open-weather13.p.rapidapi.com/city/london/EN';
+  const options = {
+    method: 'GET',
+    headers: {
+      'x-rapidapi-key': apiKey,
+      'x-rapidapi-host': 'open-weather13.p.rapidapi.com'
+    }
+  };
+
+  const response = await fetch(url, options);
 
   if (!response.ok) {
-    throw new Error("Erro ao retornar informações");
+    throw new Error('Erro ao retornar informações');
   }
 
   const data = await response.json();
 
   const summary: CurrentWeather = {
-    lat: data.lat,
-    lon: data.lon,
-    current: {
-      temp: data.current.temp, 
+    coord: {
+      lon: data.coord.lon,
+      lat: data.coord.lat
     },
+    weather: {
+      0: {
+        main: data.weather[0].main
+      }
+    },
+    main: {
+      temp: data.main.temp,
+      feels_like: data.main.feels_like
+    }
   };
 
   return summary;
 };
-
 
 getWeather()
   .then((weatherSummary) => {
